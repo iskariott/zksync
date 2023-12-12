@@ -1,9 +1,10 @@
 const { ethers } = require('ethers');
-const { DELAY_ACC } = require('./config.js');
+const { DELAY_ACC, ACCS, SWAP_TYPE, AMOUNT_OUT_PERCENT } = require('./config.js');
 const { waitForGas, getTokenBalance } = require('./modules/helpers.js');
+const { getUsdcModules, getEthModules } = require('./modules/index.js');
 const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
-const { ETH, ZK_PROVIDER } = require('./utils/constants.js');
-const { parseValue, cliCountDown } = require('./utils/utils.js');
+const { ETH, ZK_PROVIDER, USDC } = require('./utils/constants.js');
+const { parseValue, cliCountDown, readWallets } = require('./utils/utils.js');
 
 async function process() {
   const keys = readWallets();
@@ -17,37 +18,41 @@ async function process() {
     console.log('===========================================================');
     console.log('Account: ', i);
     console.log('----------------------------------------------------------');
-    const signer = new ethers.Wallet(keys[i], ZK_PROVIDER);
-    if (SWAP_TYPE) {
-      const usdc_balance = parseValue(await getTokenBalance(signer, USDC), 6);
-      if (usdc_balance) {
-        const modules = getUsdcModules();
-        await waitForGas();
-        await modules[Math.floor(Math.random() * modules.length)](usdc_balance);
+    try {
+      const signer = new ethers.Wallet(keys[i], ZK_PROVIDER);
+      if (!SWAP_TYPE) {
+        const usdc_balance = parseValue(await getTokenBalance(signer, USDC), 6).toFixed(6);
+        if (usdc_balance) {
+          const modules = getUsdcModules(signer, usdc_balance);
+          await waitForGas();
+          await modules[Math.floor(Math.random() * modules.length)]();
+        } else {
+          const eth_balance = parseValue(await signer.getBalance(), 18);
+          const amount = (eth_balance * (AMOUNT_OUT_PERCENT / 100)).toFixed(6);
+          const modules = getEthModules(signer, amount);
+          await waitForGas();
+          await modules[Math.floor(Math.random() * modules.length)]();
+        }
       } else {
-        const eth_balance = parseValue(await signer.getBalance(), 18);
-        const amount = eth_balance * (AMOUNT_OUT_PERCENT / 100);
-        const modules = getEthModules();
-        await waitForGas();
-        await modules[Math.floor(Math.random() * modules.length)](amount);
+        const weth_balance = parseValue(await getTokenBalance(signer, ETH), 18).toFixed(6);
+        if (weth_balance) {
+          await waitForGas();
+          await unwrapEth(signer, weth_balance);
+        } else {
+          const eth_balance = parseValue(await signer.getBalance(), 18);
+          const amount = (eth_balance * (AMOUNT_OUT_PERCENT / 100)).toFixed(6);
+          await waitForGas();
+          await wrapEth(signer, amount);
+        }
       }
-    } else {
-      const weth_balance = parseValue(await getTokenBalance(signer, ETH), 18);
-      if (weth_balance) {
-        await waitForGas();
-        await unwrapEth(signer, weth_balance);
-      } else {
-        const eth_balance = parseValue(await signer.getBalance(), 18);
-        const amount = eth_balance * (AMOUNT_OUT_PERCENT / 100);
-        await waitForGas();
-        await wrapEth(signer, amount);
-      }
+      console.log('===========================================================');
+      await cliCountDown(
+        Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
+      );
+    } catch (error) {
+      console.log(error);
     }
-    console.log('===========================================================');
-    await cliCountDown(
-      Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
-    );
   }
 }
 
-await process();
+process();

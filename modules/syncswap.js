@@ -18,11 +18,11 @@ async function syncswap(signer, amount, isEthSwap) {
   try {
     if (isEthSwap) {
       tokens = [ETH, USDC];
-      parsedAmount = ethers.utils.parseEther(amount.toString());
+      parsedAmount = ethers.utils.parseEther(amount);
     } else {
       tokens = [USDC, ETH];
       await approveUSDC(signer, SYNCSWAP, amount);
-      parsedAmount = ethers.utils.parseUnits(amount.toString(), 6);
+      parsedAmount = ethers.utils.parseUnits(amount, 6);
     }
     const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
     const cl_pool_contract = new ethers.Contract(SYNCSWAP_POOL, SYNCSWAP_CL_ABI, ZK_PROVIDER);
