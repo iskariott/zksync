@@ -9,7 +9,7 @@ async function swapExactUSDC(signer, router, amount) {
     const contract = new ethers.Contract(router, SWAPEXACT_ABI, signer);
     await approveUSDC(signer, router, amount);
     const receipt = await contract.swapExactTokensForETH(
-      ethers.utils.parseUnits(amount.toString(), 6),
+      ethers.utils.parseUnits(amount, 6),
       0,
       [USDC, ETH],
       signer.address,
@@ -37,9 +37,9 @@ async function swapExactETH(signer, router, amount) {
       signer.address,
       Math.floor(Date.now() / 1000) + 60 * 10,
       {
-        gasPrice,
+        gasPrice: await ZK_PROVIDER.getGasPrice(),
         gasLimit: GAS_LIMIT,
-        value: ethers.utils.parseEther(amount.toFixed(6)),
+        value: ethers.utils.parseEther(amount),
       },
     );
     const { transactionHash } = await receipt.wait();
