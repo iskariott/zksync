@@ -2,6 +2,7 @@ const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 const moment = require('moment/moment');
+const { ACCS_NUMBERS, ACCS_PACK } = require('../config');
 
 const c = {
   grn: (t) => `\x1b[32m${t}\x1b[0m`,
@@ -81,6 +82,32 @@ function logFile(content, time = true) {
   fs.appendFileSync(path.join(__dirname, '../out.txt'), data);
 }
 
+function getAccs(keys) {
+  let accs = [];
+  if (ACCS_PACK.length && ACCS_NUMBERS.length)
+    throw new Error(c.red('Cannot use ACCS_PACK and ACCS_NUMBERS together. Change config.js'));
+  if (ACCS_PACK.length) {
+    if (ACCS_PACK[1] >= keys.length)
+      throw new Error(
+        c.red(
+          `The number of accounts is greater than in the wallets.txt. Please change ACCS_PACK in the config.js `,
+        ),
+      );
+    accs = Array.from(Array(ACCS_PACK[1] - ACCS_PACK[0] + 1)).map((_, idx) => idx + ACCS_PACK[0]);
+  } else {
+    if (ACCS_NUMBERS.sort((a, b) => a - b).pop() >= keys.length)
+      throw new Error(
+        c.red(
+          `The number of accounts is greater than in the wallets.txt. Please change ACCS_NUMBERS in the config.js `,
+        ),
+      );
+    accs = ACCS_NUMBERS;
+  }
+
+  if (RANDOMIZE_WALLETS) accs = shuffle(accs);
+  return acss;
+}
+
 module.exports = {
   parseValue,
   shuffle,
@@ -91,4 +118,5 @@ module.exports = {
   findObjKeyByValue,
   // calculateGas,
   logFile,
+  getAccs,
 };

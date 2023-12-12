@@ -1,43 +1,14 @@
 const { ethers } = require('ethers');
-const {
-  DELAY_ACC,
-  ACCS,
-  SWAP_TYPE,
-  AMOUNT_OUT_PERCENT,
-  ACCS_PACK,
-  ACCS_NUMBERS,
-} = require('./config.js');
+const { DELAY_ACC, SWAP_TYPE, AMOUNT_OUT_PERCENT } = require('./config.js');
 const { waitForGas, getTokenBalance } = require('./modules/helpers.js');
-const { getUsdcModules, getEthModules } = require('./modules/index.js');
+const { getUsdcModule, getEthModule } = require('./modules/index.js');
 const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
 const { ETH, ZK_PROVIDER, USDC } = require('./utils/constants.js');
-const { parseValue, cliCountDown, readWallets, c, logFile, shuffle } = require('./utils/utils.js');
+const { parseValue, cliCountDown, readWallets, logFile, getAccs } = require('./utils/utils.js');
 
 function process() {
   const keys = readWallets();
-  let accs = [];
-  if (ACCS_PACK.length && ACCS_NUMBERS.length)
-    throw new Error(c.red('Cannot use ACCS_PACK and ACCS_NUMBERS together. Change config.js'));
-  if (ACCS_PACK.length) {
-    if (ACCS_PACK[1] >= keys.length)
-      throw new Error(
-        c.red(
-          `The number of accounts is greater than in the wallets.txt. Please change ACCS_PACK in the config.js `,
-        ),
-      );
-    accs = Array.from(Array(ACCS_PACK[1] - ACCS_PACK[0] + 1)).map((_, idx) => idx + ACCS_PACK[0]);
-  } else {
-    if (ACCS_NUMBERS.sort((a, b) => a - b).pop() >= keys.length)
-      throw new Error(
-        c.red(
-          `The number of accounts is greater than in the wallets.txt. Please change ACCS_NUMBERS in the config.js `,
-        ),
-      );
-    accs = ACCS_NUMBERS;
-  }
-
-  if (RANDOMIZE_WALLETS) accs = shuffle(accs);
-
+  const accs = getAccs(keys);
   accs.forEach(async (i) => {
     logFile(`Account: ${i}`);
     console.log(
@@ -49,29 +20,25 @@ function process() {
     );
     try {
       const signer = new ethers.Wallet(keys[i], ZK_PROVIDER);
+      const eth_balance = parseValue(await signer.getBalance(), 18);
+      const eth_amount = (eth_balance * (AMOUNT_OUT_PERCENT / 100)).toFixed(6);
       if (!SWAP_TYPE) {
-        const usdc_balance = parseValue(await getTokenBalance(signer, USDC), 6).toFixed(6);
-        if (Number(usdc_balance)) {
-          const modules = getUsdcModules(signer, usdc_balance);
+        const usdc_balance = parseValue(await getTokenBalance(signer, USDC), 6);
+        if (usdc_balance) {
           await waitForGas();
-          await modules[Math.floor(Math.random() * modules.length)]();
+          await getUsdcModule(signer, usdc_balance.toFixed(6))();
         } else {
-          const eth_balance = parseValue(await signer.getBalance(), 18);
-          const amount = (eth_balance * (AMOUNT_OUT_PERCENT / 100)).toFixed(6);
-          const modules = getEthModules(signer, amount);
           await waitForGas();
-          await modules[Math.floor(Math.random() * modules.length)]();
+          await getEthModule(signer, eth_amount)();
         }
       } else {
-        const weth_balance = parseValue(await getTokenBalance(signer, ETH), 18).toFixed(6);
-        if (Number(weth_balance)) {
+        const weth_balance = parseValue(await getTokenBalance(signer, ETH), 18);
+        if (weth_balance) {
           await waitForGas();
-          await unwrapEth(signer, weth_balance);
+          await unwrapEth(signer, weth_balance.toFixed(6));
         } else {
-          const eth_balance = parseValue(await signer.getBalance(), 18);
-          const amount = (eth_balance * (AMOUNT_OUT_PERCENT / 100)).toFixed(6);
           await waitForGas();
-          await wrapEth(signer, amount);
+          await wrapEth(signer, eth_amount);
         }
       }
       console.log(
