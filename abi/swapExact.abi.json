@@ -3,7 +3,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "amountOut",
+        "name": "amountOutMin",
         "type": "uint256"
       },
       {
@@ -22,7 +22,7 @@
         "type": "uint256"
       }
     ],
-    "name": "swapETHForExactTokens",
+    "name": "swapExactETHForTokens",
     "outputs": [
       {
         "internalType": "uint256[]",
