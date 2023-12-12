@@ -9,7 +9,7 @@ const {
   ETH,
   USDC,
 } = require('../utils/constants.js');
-const { c } = require('../utils/utils.js');
+const { c, logFile } = require('../utils/utils.js');
 const { approveUSDC } = require('./helpers.js');
 
 async function syncswap(signer, amount, isEthSwap) {
@@ -62,10 +62,14 @@ async function syncswap(signer, amount, isEthSwap) {
     );
     const { transactionHash } = await receipt.wait();
     console.log(
-      `swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # hash: ${transactionHash}`,
+      `Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # hash: ${transactionHash}`,
+    );
+    logFile(
+      `Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # hash: ${transactionHash}`,
     );
   } catch (error) {
-    console.log(c.red(`ERROR! swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap`));
+    console.log(c.red(`ERROR! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap`));
+    logFile(`ERROR! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap`);
     throw error;
   }
 }

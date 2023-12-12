@@ -74,12 +74,10 @@ function readWallets() {
 //   return parseValue(gwei * gasLimit, 11) * ethPrice;
 // }
 
-function logFile(content, time = false, newLine = false) {
-  const data = '';
+function logFile(content, time = true) {
+  let data = '';
   if (time) data = moment().format('DD.MM.YY hh:mm:ss a') + ' # ';
-  data.concat(content);
-  if (newLine) data.concat('\n');
-
+  data.concat(content + '\n');
   fs.appendFileSync(path.join(__dirname, '../out.txt'), data);
 }
 
