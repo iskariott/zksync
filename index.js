@@ -2,9 +2,8 @@ const { ethers } = require('ethers');
 const { DELAY_ACC, ACCS, SWAP_TYPE, AMOUNT_OUT_PERCENT } = require('./config.js');
 const { waitForGas, getTokenBalance } = require('./modules/helpers.js');
 const { getUsdcModules, getEthModules } = require('./modules/index.js');
-const { swapExactUSDC, swapExactETH } = require('./modules/swapExact.js');
 const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
-const { ETH, ZK_PROVIDER, USDC, ZKSWAP } = require('./utils/constants.js');
+const { ETH, ZK_PROVIDER, USDC } = require('./utils/constants.js');
 const { parseValue, cliCountDown, readWallets, c } = require('./utils/utils.js');
 
 async function process() {
