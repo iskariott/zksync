@@ -2,9 +2,10 @@ const { ethers } = require('ethers');
 const { DELAY_ACC, ACCS, SWAP_TYPE, AMOUNT_OUT_PERCENT } = require('./config.js');
 const { waitForGas, getTokenBalance } = require('./modules/helpers.js');
 const { getUsdcModules, getEthModules } = require('./modules/index.js');
+const { swapExactUSDC, swapExactETH } = require('./modules/swapExact.js');
 const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
-const { ETH, ZK_PROVIDER, USDC } = require('./utils/constants.js');
-const { parseValue, cliCountDown, readWallets } = require('./utils/utils.js');
+const { ETH, ZK_PROVIDER, USDC, ZKSWAP } = require('./utils/constants.js');
+const { parseValue, cliCountDown, readWallets, c } = require('./utils/utils.js');
 
 async function process() {
   const keys = readWallets();
@@ -15,14 +16,18 @@ async function process() {
       )} ${c.yel('ACCS')} ${c.red('in the')} ${c.blu('config.js')} `,
     );
   for (let i = ACCS[0]; i <= ACCS[1]; i++) {
-    console.log('===========================================================');
+    console.log(
+      '======================================================================================================================',
+    );
     console.log('Account: ', i);
-    console.log('----------------------------------------------------------');
+    console.log(
+      '----------------------------------------------------------------------------------------------------------------------',
+    );
     try {
       const signer = new ethers.Wallet(keys[i], ZK_PROVIDER);
       if (!SWAP_TYPE) {
         const usdc_balance = parseValue(await getTokenBalance(signer, USDC), 6).toFixed(6);
-        if (usdc_balance) {
+        if (Number(usdc_balance)) {
           const modules = getUsdcModules(signer, usdc_balance);
           await waitForGas();
           await modules[Math.floor(Math.random() * modules.length)]();
@@ -35,7 +40,7 @@ async function process() {
         }
       } else {
         const weth_balance = parseValue(await getTokenBalance(signer, ETH), 18).toFixed(6);
-        if (weth_balance) {
+        if (Number(weth_balance)) {
           await waitForGas();
           await unwrapEth(signer, weth_balance);
         } else {
@@ -45,7 +50,9 @@ async function process() {
           await wrapEth(signer, amount);
         }
       }
-      console.log('===========================================================');
+      console.log(
+        '======================================================================================================================',
+      );
       await cliCountDown(
         Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
       );

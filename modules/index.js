@@ -6,14 +6,14 @@ function getUsdcModules(signer, amount) {
   const swap1 = () => swapExactUSDC(signer, ZKSWAP, amount);
   const swap2 = () => swapExactUSDC(signer, SPACEFI, amount);
   const swap3 = () => syncswap(signer, amount, false);
-  return [swap1, swap2, swap3];
+  return [swap1, swap2];
 }
 
 function getEthModules(signer, amount) {
   const swap1 = () => swapExactETH(signer, ZKSWAP, amount);
   const swap2 = () => swapExactETH(signer, SPACEFI, amount);
   const swap3 = () => syncswap(signer, amount, true);
-  return [swap1, swap2, swap3];
+  return [swap1, swap2];
 }
 
 module.exports = {

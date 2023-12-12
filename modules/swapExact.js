@@ -2,6 +2,7 @@ const { ethers } = require('ethers');
 const { GAS_LIMIT } = require('../config.js');
 const { MODULES, SWAPEXACT_ABI, ZK_PROVIDER, ETH, USDC } = require('../utils/constants.js');
 const { c, findObjKeyByValue } = require('../utils/utils.js');
+const { approveUSDC } = require('./helpers.js');
 
 async function swapExactUSDC(signer, router, amount) {
   const routerName = findObjKeyByValue(MODULES, router);
@@ -43,7 +44,7 @@ async function swapExactETH(signer, router, amount) {
       },
     );
     const { transactionHash } = await receipt.wait();
-    console.log(`swap ${amount}USDC # module: ${routerName} # hash: ${transactionHash}`);
+    console.log(`swap ${amount}ETH # module: ${routerName} # hash: ${transactionHash}`);
   } catch (error) {
     console.log(c.red(`swapExactETH ERROR! swap ${amount}ETH # module: ${routerName}`));
     throw error;
