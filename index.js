@@ -1,0 +1,53 @@
+const { ethers } = require('ethers');
+const { DELAY_ACC } = require('./config.js');
+const { waitForGas, getTokenBalance } = require('./modules/helpers.js');
+const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
+const { ETH, ZK_PROVIDER } = require('./utils/constants.js');
+const { parseValue, cliCountDown } = require('./utils/utils.js');
+
+async function process() {
+  const keys = readWallets();
+  if (ACCS[1] >= keys.length)
+    throw new Error(
+      `${c.red('The number of accounts is greater than in the')} ${c.blu('wallets.txt')}${c.red(
+        '. Please change',
+      )} ${c.yel('ACCS')} ${c.red('in the')} ${c.blu('config.js')} `,
+    );
+  for (let i = ACCS[0]; i <= ACCS[1]; i++) {
+    console.log('===========================================================');
+    console.log('Account: ', i);
+    console.log('----------------------------------------------------------');
+    const signer = new ethers.Wallet(keys[i], ZK_PROVIDER);
+    if (SWAP_TYPE) {
+      const usdc_balance = parseValue(await getTokenBalance(signer, USDC), 6);
+      if (usdc_balance) {
+        const modules = getUsdcModules();
+        await waitForGas();
+        await modules[Math.floor(Math.random() * modules.length)](usdc_balance);
+      } else {
+        const eth_balance = parseValue(await signer.getBalance(), 18);
+        const amount = eth_balance * (AMOUNT_OUT_PERCENT / 100);
+        const modules = getEthModules();
+        await waitForGas();
+        await modules[Math.floor(Math.random() * modules.length)](amount);
+      }
+    } else {
+      const weth_balance = parseValue(await getTokenBalance(signer, ETH), 18);
+      if (weth_balance) {
+        await waitForGas();
+        await unwrapEth(signer, weth_balance);
+      } else {
+        const eth_balance = parseValue(await signer.getBalance(), 18);
+        const amount = eth_balance * (AMOUNT_OUT_PERCENT / 100);
+        await waitForGas();
+        await wrapEth(signer, amount);
+      }
+    }
+    console.log('===========================================================');
+    await cliCountDown(
+      Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
+    );
+  }
+}
+
+await process();
