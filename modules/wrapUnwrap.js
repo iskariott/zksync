@@ -1,7 +1,7 @@
 const { ethers } = require('ethers');
 const { GAS_LIMIT } = require('../config.js');
 const { ETH, WETH_ABI, ZK_PROVIDER } = require('../utils/constants.js');
-const { c } = require('../utils/utils.js');
+const { c, logFile } = require('../utils/utils.js');
 
 async function wrapEth(signer, amount) {
   try {
@@ -13,8 +13,10 @@ async function wrapEth(signer, amount) {
     });
     const { transactionHash } = await receipt.wait();
     console.log(`Wrapped ${amount}ETH # hash: ${transactionHash}`);
+    logFile(`Wrapped ${amount}ETH # hash: ${transactionHash}`);
   } catch (error) {
-    console.log(c.red(`ERROR! wrapEth ${amount}ETH`));
+    console.log(c.red(`ERROR! Wrap ${amount}ETH`));
+    logFile(`ERROR! Wrap ${amount}ETH`);
     throw error;
   }
 }
@@ -27,9 +29,11 @@ async function unwrapEth(signer, amount) {
       gasLimit: GAS_LIMIT,
     });
     const { transactionHash } = await receipt.wait();
-    console.log(`Unwrapped ${amount}ETH # hash: ${transactionHash}`);
+    console.log(`Unwrapped ${amount}WETH # hash: ${transactionHash}`);
+    logFile(`Unwrapped ${amount}WETH # hash: ${transactionHash}`);
   } catch (error) {
-    console.log(c.red(`ERROR! unwrapEth ${amount}ETH`));
+    console.log(c.red(`ERROR! Unwrap ${amount}WETH`));
+    logFile(`ERROR! Unwrap ${amount}WETH`);
     throw error;
   }
 }

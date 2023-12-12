@@ -1,7 +1,7 @@
 const { ethers } = require('ethers');
 const { GAS_LIMIT } = require('../config.js');
 const { MODULES, SWAPEXACT_ABI, ZK_PROVIDER, ETH, USDC } = require('../utils/constants.js');
-const { c, findObjKeyByValue } = require('../utils/utils.js');
+const { c, findObjKeyByValue, logFile } = require('../utils/utils.js');
 const { approveUSDC } = require('./helpers.js');
 
 async function swapExactUSDC(signer, router, amount) {
@@ -21,9 +21,11 @@ async function swapExactUSDC(signer, router, amount) {
       },
     );
     const { transactionHash } = await receipt.wait();
-    console.log(`swap ${amount}USDC # module: ${routerName} # hash: ${transactionHash}`);
+    console.log(`Swap ${amount}USDC # module: ${routerName} # hash: ${transactionHash}`);
+    logFile(`Swap ${amount}USDC # module: ${routerName} # hash: ${transactionHash}`);
   } catch (error) {
-    console.log(c.red(`swapExactUSDC ERROR! swap ${amount}USDC # module: ${routerName}`));
+    console.log(c.red(`ERROR! Swap ${amount}USDC # module: ${routerName}`));
+    logFile(`ERROR! Swap ${amount}USDC # module: ${routerName}`);
     throw error;
   }
 }
@@ -44,9 +46,11 @@ async function swapExactETH(signer, router, amount) {
       },
     );
     const { transactionHash } = await receipt.wait();
-    console.log(`swap ${amount}ETH # module: ${routerName} # hash: ${transactionHash}`);
+    console.log(`Swap ${amount}ETH # module: ${routerName} # hash: ${transactionHash}`);
+    logFile(`Swap ${amount}ETH # module: ${routerName} # hash: ${transactionHash}`);
   } catch (error) {
-    console.log(c.red(`swapExactETH ERROR! swap ${amount}ETH # module: ${routerName}`));
+    console.log(c.red(`ERROR! Swap ${amount}ETH # module: ${routerName}`));
+    logFile(`ERROR! Swap ${amount}ETH # module: ${routerName}`);
     throw error;
   }
 }

@@ -1,4 +1,4 @@
-const { c, parseValue, findObjKeyByValue } = require('../utils/utils.js');
+const { c, parseValue, findObjKeyByValue, logFile } = require('../utils/utils.js');
 const readline = require('readline');
 const { CHECK_GAS_DELAY, ALLOWED_GWEI, APPROVE_AMOUNT, GAS_LIMIT } = require('../config.js');
 const { MODULES, ETH_PROVIDER, USDC, ERC20_ABI, ZK_PROVIDER } = require('../utils/constants.js');
@@ -22,7 +22,6 @@ async function approveUSDC(signer, router, amount) {
     const allowance = parseValue(allowanceData, 6);
 
     if (amount > allowance) {
-      console.log('USDC allowance: ', allowance);
       const approve = await contract.approve(
         router,
         ethers.utils.parseUnits(APPROVE_AMOUNT.toString(), 6),
@@ -35,9 +34,11 @@ async function approveUSDC(signer, router, amount) {
       console.log(
         `Approved ${APPROVE_AMOUNT}USDC # module: ${routerName} # hash: ${transactionHash}`,
       );
+      logFile(`Approved ${APPROVE_AMOUNT}USDC # module: ${routerName} # hash: ${transactionHash}`);
     }
   } catch (error) {
-    console.log(c.red(`ERROR approve: ${amount}USDC # module: ${routerName}`));
+    console.log(c.red(`ERROR approve: ${APPROVE_AMOUNT}USDC # module: ${routerName}`));
+    logFile(`ERROR approve: ${APPROVE_AMOUNT}USDC # module: ${routerName}`);
     throw error;
   }
 }

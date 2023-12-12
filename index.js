@@ -4,7 +4,7 @@ const { waitForGas, getTokenBalance } = require('./modules/helpers.js');
 const { getUsdcModules, getEthModules } = require('./modules/index.js');
 const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
 const { ETH, ZK_PROVIDER, USDC } = require('./utils/constants.js');
-const { parseValue, cliCountDown, readWallets, c } = require('./utils/utils.js');
+const { parseValue, cliCountDown, readWallets, c, logFile } = require('./utils/utils.js');
 
 async function process() {
   const keys = readWallets();
@@ -15,6 +15,7 @@ async function process() {
       )} ${c.yel('ACCS')} ${c.red('in the')} ${c.blu('config.js')} `,
     );
   for (let i = ACCS[0]; i <= ACCS[1]; i++) {
+    logFile(`Account: ${i}`);
     console.log(
       '======================================================================================================================',
     );
@@ -51,6 +52,10 @@ async function process() {
       }
       console.log(
         '======================================================================================================================',
+      );
+      logFile(
+        '======================================================================================================================',
+        false,
       );
       await cliCountDown(
         Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
