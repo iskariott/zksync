@@ -1,20 +1,44 @@
 const { ethers } = require('ethers');
-const { DELAY_ACC, ACCS, SWAP_TYPE, AMOUNT_OUT_PERCENT } = require('./config.js');
+const {
+  DELAY_ACC,
+  ACCS,
+  SWAP_TYPE,
+  AMOUNT_OUT_PERCENT,
+  ACCS_PACK,
+  ACCS_NUMBERS,
+} = require('./config.js');
 const { waitForGas, getTokenBalance } = require('./modules/helpers.js');
 const { getUsdcModules, getEthModules } = require('./modules/index.js');
 const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
 const { ETH, ZK_PROVIDER, USDC } = require('./utils/constants.js');
-const { parseValue, cliCountDown, readWallets, c, logFile } = require('./utils/utils.js');
+const { parseValue, cliCountDown, readWallets, c, logFile, shuffle } = require('./utils/utils.js');
 
-async function process() {
+function process() {
   const keys = readWallets();
-  if (ACCS[1] >= keys.length)
-    throw new Error(
-      `${c.red('The number of accounts is greater than in the')} ${c.blu('wallets.txt')}${c.red(
-        '. Please change',
-      )} ${c.yel('ACCS')} ${c.red('in the')} ${c.blu('config.js')} `,
-    );
-  for (let i = ACCS[0]; i <= ACCS[1]; i++) {
+  let accs = [];
+  if (ACCS_PACK.length && ACCS_NUMBERS.length)
+    throw new Error(c.red('Cannot use ACCS_PACK and ACCS_NUMBERS together. Change config.js'));
+  if (ACCS_PACK.length) {
+    if (ACCS_PACK[1] >= keys.length)
+      throw new Error(
+        c.red(
+          `The number of accounts is greater than in the wallets.txt. Please change ACCS_PACK in the config.js `,
+        ),
+      );
+    accs = Array.from(Array(ACCS_PACK[1] - ACCS_PACK[0] + 1)).map((_, idx) => idx + ACCS_PACK[0]);
+  } else {
+    if (ACCS_NUMBERS.sort((a, b) => a - b).pop() >= keys.length)
+      throw new Error(
+        c.red(
+          `The number of accounts is greater than in the wallets.txt. Please change ACCS_NUMBERS in the config.js `,
+        ),
+      );
+    accs = ACCS_NUMBERS;
+  }
+
+  if (RANDOMIZE_WALLETS) accs = shuffle(accs);
+
+  accs.forEach(async (i) => {
     logFile(`Account: ${i}`);
     console.log(
       '======================================================================================================================',
@@ -63,7 +87,7 @@ async function process() {
     } catch (error) {
       console.log(error);
     }
-  }
+  });
 }
 
 process();
