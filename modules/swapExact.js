@@ -17,6 +17,7 @@ async function swapExactUSDC(signer, router, amount) {
       Math.floor(Date.now() / 1000) + 60 * 10,
       {
         gasPrice: await ZK_PROVIDER.getGasPrice(),
+        nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
         gasLimit: GAS_LIMIT,
       },
     );
@@ -41,6 +42,7 @@ async function swapExactETH(signer, router, amount) {
       Math.floor(Date.now() / 1000) + 60 * 10,
       {
         gasPrice: await ZK_PROVIDER.getGasPrice(),
+        nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
         gasLimit: GAS_LIMIT,
         value: ethers.utils.parseEther(amount),
       },
