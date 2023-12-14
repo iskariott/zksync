@@ -6,10 +6,10 @@ const { unwrapEth, wrapEth } = require('./modules/wrapUnwrap.js');
 const { ETH, ZK_PROVIDER, USDC } = require('./utils/constants.js');
 const { parseValue, cliCountDown, readWallets, logFile, getAccs } = require('./utils/utils.js');
 
-function process() {
+async function process() {
   const keys = readWallets();
   const accs = getAccs(keys);
-  accs.forEach(async (i) => {
+  for (let i = 0; i < accs.length; i++) {
     logFile(`Account: ${i}`);
     console.log(
       '======================================================================================================================',
@@ -54,7 +54,7 @@ function process() {
     } catch (error) {
       console.log(error);
     }
-  });
+  }
 }
 
 process();
