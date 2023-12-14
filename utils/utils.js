@@ -2,7 +2,7 @@ const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 const moment = require('moment/moment');
-const { ACCS_NUMBERS, ACCS_PACK } = require('../config');
+const { ACCS_NUMBERS, ACCS_PACK, RANDOMIZE_WALLETS } = require('../config');
 
 const c = {
   grn: (t) => `\x1b[32m${t}\x1b[0m`,
@@ -105,7 +105,7 @@ function getAccs(keys) {
   }
 
   if (RANDOMIZE_WALLETS) accs = shuffle(accs);
-  return acss;
+  return accs;
 }
 
 module.exports = {
