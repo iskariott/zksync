@@ -57,6 +57,7 @@ async function syncswap(signer, amount, isEthSwap) {
       {
         value: parsedAmount,
         gasLimit: GAS_LIMIT,
+        nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
         gasPrice: await ZK_PROVIDER.getGasPrice(),
       },
     );

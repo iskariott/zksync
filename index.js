@@ -9,12 +9,13 @@ const { parseValue, cliCountDown, readWallets, logFile, getAccs } = require('./u
 async function process() {
   const keys = readWallets();
   const accs = getAccs(keys);
+  console.log('accs = ', accs);
   for (let i = 0; i < accs.length; i++) {
     logFile(`Account: ${i}`);
     console.log(
       '======================================================================================================================',
     );
-    console.log('Account: ', i);
+    console.log('Account: ', accs[i]);
     console.log(
       '----------------------------------------------------------------------------------------------------------------------',
     );

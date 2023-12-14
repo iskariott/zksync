@@ -95,12 +95,14 @@ function getAccs(keys) {
       );
     accs = Array.from(Array(ACCS_PACK[1] - ACCS_PACK[0] + 1)).map((_, idx) => idx + ACCS_PACK[0]);
   } else {
-    if (ACCS_NUMBERS.sort((a, b) => a - b).pop() >= keys.length)
+    console.log('ACCS_NUMBERS = ', ACCS_NUMBERS);
+    if (ACCS_NUMBERS.sort((a, b) => a - b)[-1] >= keys.length)
       throw new Error(
         c.red(
           `The number of accounts is greater than in the wallets.txt. Please change ACCS_NUMBERS in the config.js `,
         ),
       );
+    console.log('ACCS_NUMBERS = ', ACCS_NUMBERS);
     accs = ACCS_NUMBERS;
   }
 
