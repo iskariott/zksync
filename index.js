@@ -9,13 +9,12 @@ const { parseValue, cliCountDown, readWallets, logFile, getAccs } = require('./u
 async function process() {
   const keys = readWallets();
   const accs = getAccs(keys);
-  console.log('accs = ', accs);
   for (let i = 0; i < accs.length; i++) {
-    logFile(`Account: ${i}`);
+    logFile(`${i}. Account: ${accs[i]}`);
     console.log(
       '======================================================================================================================',
     );
-    console.log('Account: ', accs[i]);
+    console.log(`${i}. Account: ${accs[i]}`);
     console.log(
       '----------------------------------------------------------------------------------------------------------------------',
     );
@@ -52,8 +51,8 @@ async function process() {
       await cliCountDown(
         Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
       );
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e.code || e);
     }
   }
 }

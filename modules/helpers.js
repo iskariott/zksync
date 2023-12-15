@@ -31,15 +31,14 @@ async function approveUSDC(signer, router, amount) {
         },
       );
       const { transactionHash } = await approve.wait();
-      console.log(
-        `Approved ${APPROVE_AMOUNT}USDC # module: ${routerName} # hash: ${transactionHash}`,
-      );
-      logFile(`Approved ${APPROVE_AMOUNT}USDC # module: ${routerName} # hash: ${transactionHash}`);
+      const log = `Approved ${APPROVE_AMOUNT}USDC # module: ${routerName} # hash: ${transactionHash}`;
+      console.log(log);
+      logFile(log);
     }
-  } catch (error) {
+  } catch (e) {
     console.log(c.red(`ERROR approve: ${APPROVE_AMOUNT}USDC # module: ${routerName}`));
-    logFile(`ERROR approve: ${APPROVE_AMOUNT}USDC # module: ${routerName}`);
-    throw error;
+    logFile(`ERROR! approve: ${APPROVE_AMOUNT}USDC # module: ${routerName} # reason: ${e.message}`);
+    throw e;
   }
 }
 
