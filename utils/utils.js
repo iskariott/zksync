@@ -62,7 +62,12 @@ function parseValue(value, pow = 18) {
 }
 
 function readWallets() {
-  return fs.readFileSync('./wallets.txt', { encoding: 'utf-8' }).toString().split('\r\n');
+  const data = fs.readFileSync('./wallets.txt', { encoding: 'utf-8' });
+  if (!data.length) {
+    console.log(c.red('Wallets.txt is empty'));
+    return false;
+  }
+  return data.toString().split('\r\n');
 }
 
 // async function calculateGas(gasLimitHex) {

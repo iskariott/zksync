@@ -63,18 +63,17 @@ async function syncswap(signer, amount, isEthSwap) {
     );
     const { transactionHash } = await receipt.wait();
     console.log(
-      `Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # hash: ${transactionHash}`,
+      `Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # Module: SyncSwap # hash: ${transactionHash}`,
     );
     logFile(
-      `Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # hash: ${transactionHash}`,
+      `Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # Module: SyncSwap # hash: ${transactionHash}`,
     );
   } catch (e) {
-    console.log(c.red(`ERROR! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap`));
-    logFile(
-      `ERROR! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # reason: ${
-        e.message
-      }`,
+    const code = e.code ? ` : ${e.code}` : '';
+    console.log(
+      c.red(`ERROR${code}! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # Module: SyncSwap`),
     );
+    logFile(`ERROR${code}! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # Module: SyncSwap`);
     throw e;
   }
 }
