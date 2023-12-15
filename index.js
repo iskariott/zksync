@@ -8,9 +8,10 @@ const { parseValue, cliCountDown, readWallets, logFile, getAccs } = require('./u
 
 async function process() {
   const keys = readWallets();
+  if (!keys) return;
   const accs = getAccs(keys);
   for (let i = 0; i < accs.length; i++) {
-    logFile(`${i}. Account: ${accs[i]}`);
+    logFile(`Account: ${accs[i]}`);
     console.log(
       '======================================================================================================================',
     );
@@ -52,7 +53,7 @@ async function process() {
         Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
       );
     } catch (e) {
-      console.log(e.code || e);
+      !e.code && console.log(e);
     }
   }
 }
