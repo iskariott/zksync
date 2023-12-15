@@ -24,10 +24,10 @@ async function swapExactUSDC(signer, router, amount) {
     const { transactionHash } = await receipt.wait();
     console.log(`Swap ${amount}USDC # module: ${routerName} # hash: ${transactionHash}`);
     logFile(`Swap ${amount}USDC # module: ${routerName} # hash: ${transactionHash}`);
-  } catch (error) {
+  } catch (e) {
     console.log(c.red(`ERROR! Swap ${amount}USDC # module: ${routerName}`));
-    logFile(`ERROR! Swap ${amount}USDC # module: ${routerName}`);
-    throw error;
+    logFile(`ERROR! Swap ${amount}USDC # module: ${routerName} # reason: ${e.message}`);
+    throw e;
   }
 }
 
@@ -50,10 +50,10 @@ async function swapExactETH(signer, router, amount) {
     const { transactionHash } = await receipt.wait();
     console.log(`Swap ${amount}ETH # module: ${routerName} # hash: ${transactionHash}`);
     logFile(`Swap ${amount}ETH # module: ${routerName} # hash: ${transactionHash}`);
-  } catch (error) {
+  } catch (e) {
     console.log(c.red(`ERROR! Swap ${amount}ETH # module: ${routerName}`));
-    logFile(`ERROR! Swap ${amount}ETH # module: ${routerName}`);
-    throw error;
+    logFile(`ERROR! Swap ${amount}ETH # module: ${routerName} # reason: ${e.message}`);
+    throw e;
   }
 }
 

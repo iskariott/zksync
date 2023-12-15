@@ -68,10 +68,14 @@ async function syncswap(signer, amount, isEthSwap) {
     logFile(
       `Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # hash: ${transactionHash}`,
     );
-  } catch (error) {
+  } catch (e) {
     console.log(c.red(`ERROR! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap`));
-    logFile(`ERROR! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap`);
-    throw error;
+    logFile(
+      `ERROR! Swap ${amount}${isEthSwap ? 'ETH' : 'USDC'} # module: SyncSwap # reason: ${
+        e.message
+      }`,
+    );
+    throw e;
   }
 }
 

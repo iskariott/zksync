@@ -78,7 +78,7 @@ function readWallets() {
 function logFile(content, time = true) {
   let data = '';
   if (time) data = moment().format('DD.MM.YY hh:mm:ss a') + ' # ';
-  data.concat(content + '\n');
+  data = data.concat(content + '\n');
   fs.appendFileSync(path.join(__dirname, '../out.txt'), data);
 }
 
