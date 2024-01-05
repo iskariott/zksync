@@ -10,6 +10,7 @@ async function process() {
   const keys = readWallets();
   if (!keys) return;
   const accs = getAccs(keys);
+  console.log('Accounts = ', accs);
   for (let i = 0; i < accs.length; i++) {
     logFile(`Account: ${accs[i]}`);
     console.log(
