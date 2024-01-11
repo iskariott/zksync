@@ -21,7 +21,7 @@ async function process() {
       '----------------------------------------------------------------------------------------------------------------------',
     );
     try {
-      const signer = new ethers.Wallet(keys[i], ZK_PROVIDER);
+      const signer = new ethers.Wallet(keys[accs[i]], ZK_PROVIDER);
       const eth_balance = parseValue(await signer.getBalance(), 18);
       const eth_amount = (eth_balance * (AMOUNT_OUT_PERCENT / 100)).toFixed(6);
       if (!SWAP_TYPE) {
