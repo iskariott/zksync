@@ -13,13 +13,9 @@ async function process() {
   console.log('Accounts = ', accs);
   for (let i = 0; i < accs.length; i++) {
     logFile(`Account: ${accs[i]}`);
-    console.log(
-      '======================================================================================================================',
-    );
+    console.log('='.repeat(118));
     console.log(`${i}. Account: ${accs[i]}`);
-    console.log(
-      '----------------------------------------------------------------------------------------------------------------------',
-    );
+    console.log('-'.repeat(118));
     try {
       const signer = new ethers.Wallet(keys[accs[i]], ZK_PROVIDER);
       const eth_balance = parseValue(await signer.getBalance(), 18);
@@ -43,13 +39,8 @@ async function process() {
           await wrapEth(signer, eth_amount);
         }
       }
-      console.log(
-        '======================================================================================================================',
-      );
-      logFile(
-        '======================================================================================================================',
-        false,
-      );
+      console.log('='.repeat(118));
+      logFile('='.repeat(118), false);
       await cliCountDown(
         Math.floor(Math.random() * (DELAY_ACC[1] - DELAY_ACC[0] + 1)) + DELAY_ACC[0],
       );
