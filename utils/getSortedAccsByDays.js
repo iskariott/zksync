@@ -1,4 +1,4 @@
-const { readWallets, shuffle } = require("./utils.js");
+const { shuffle } = require("./utils.js");
 const fs = require('fs');
 const path = require('path');
 const moment = require('moment/moment');
@@ -13,7 +13,7 @@ function round(value) {
   else return  Math.floor(value)++
 }
 
-function sortAccsByDays() {
+(() => {
   let data = moment().format('DD.MM.YY hh:mm:ss a') + '\n\n'
   const accsInDay = round(ACCOUNTS / 7);
   const accs = shuffle( Array.from(Array(ACCOUNTS).keys()))
@@ -26,8 +26,6 @@ function sortAccsByDays() {
     }
   }
   fs.writeFileSync(path.join(__dirname, '../sortedAccs.txt'), data)
-}
+})()
 
-module.exports = {
-  sortAccsByDays,
-};
+
