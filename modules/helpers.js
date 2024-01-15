@@ -22,9 +22,11 @@ async function approveUSDC(signer, router, amount) {
     const allowance = parseValue(allowanceData, 6);
 
     if (amount > allowance) {
+      const approveAmount =
+        Math.floor(Math.random() * (APPROVE_AMOUNT[1] - APPROVE_AMOUNT[0] + 1)) + APPROVE_AMOUNT[0];
       const approve = await contract.approve(
         router,
-        ethers.utils.parseUnits(APPROVE_AMOUNT.toString(), 6),
+        ethers.utils.parseUnits(approveAmount.toString(), 6),
         {
           gasPrice: await ZK_PROVIDER.getGasPrice(),
           gasLimit: GAS_LIMIT,
