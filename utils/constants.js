@@ -14,9 +14,8 @@ const ZK_PROVIDER = new ethers.providers.JsonRpcProvider('https://zksync.meowrpc
 const ERC20_ABI = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/erc20.abi.json')));
 const WETH_ABI = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/weth.abi.json')));
 const DMAIL_ABI = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/dmail.abi.json')));
-const SWAPEXACT_ABI = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../abi/swapExact.abi.json')),
-);
+const ZKSWAP_ABI = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/zkswap.abi.json')));
+const SPACEFI_ABI = JSON.parse(fs.readFileSync(path.join(__dirname, '../abi/spacefi.abi.json')));
 const SYNCSWAP_ABI = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../abi/syncswap/syncswap.abi.json')),
 );
@@ -50,7 +49,8 @@ module.exports = {
   ERC20_ABI,
   WETH_ABI,
   DMAIL_ABI,
-  SWAPEXACT_ABI,
+  ZKSWAP_ABI,
+  SPACEFI_ABI,
   SYNCSWAP_ABI,
   SYNCSWAP_CL_ABI,
   SYNCSWAP_CL_DATA_ABI,
