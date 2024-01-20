@@ -1,24 +1,33 @@
 const { ethers } = require('ethers');
 const { GAS_LIMIT } = require('../config.js');
-const { MODULES, SWAPEXACT_ABI, ZK_PROVIDER, ETH, USDC } = require('../utils/constants.js');
+const {
+  MODULES,
+  ZK_PROVIDER,
+  ETH,
+  USDC,
+  SPACEFI_ABI,
+  ZKSWAP_ABI,
+} = require('../utils/constants.js');
 const { c, findObjKeyByValue, logFile } = require('../utils/utils.js');
-const { approveUSDC } = require('./helpers.js');
+const { approveUSDC, getMinAmount } = require('./helpers.js');
+const { parseUnits, formatUnits, parseEther, formatEther } = require('ethers/lib/utils.js');
 
 async function swapExactUSDC(signer, router, amount) {
   const routerName = findObjKeyByValue(MODULES, router);
+  const abi = routerName === MODULES.SPACEFI ? SPACEFI_ABI : ZKSWAP_ABI;
   try {
-    const contract = new ethers.Contract(router, SWAPEXACT_ABI, signer);
+    const contract = new ethers.Contract(router, abi, signer);
     await approveUSDC(signer, router, amount);
     const receipt = await contract.swapExactTokensForETH(
-      ethers.utils.parseUnits(amount, 6),
-      0,
+      parseUnits(amount, 6),
+      await getMinAmount(contract, amount, [USDC, ETH]),
       [USDC, ETH],
       signer.address,
       Math.floor(Date.now() / 1000) + 60 * 10,
       {
         gasPrice: await ZK_PROVIDER.getGasPrice(),
         nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
-        gasLimit: GAS_LIMIT,
+        // gasLimit: GAS_LIMIT,
       },
     );
     const { transactionHash } = await receipt.wait();
@@ -34,18 +43,20 @@ async function swapExactUSDC(signer, router, amount) {
 
 async function swapExactETH(signer, router, amount) {
   const routerName = findObjKeyByValue(MODULES, router);
+  const abi = routerName === MODULES.SPACEFI ? SPACEFI_ABI : ZKSWAP_ABI;
+
   try {
-    const contract = new ethers.Contract(router, SWAPEXACT_ABI, signer);
+    const contract = new ethers.Contract(router, abi, signer);
     const receipt = await contract.swapExactETHForTokens(
-      0,
+      await getMinAmount(contract, amount, [ETH, USDC]),
       [ETH, USDC],
       signer.address,
       Math.floor(Date.now() / 1000) + 60 * 10,
       {
         gasPrice: await ZK_PROVIDER.getGasPrice(),
         nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
-        gasLimit: GAS_LIMIT,
-        value: ethers.utils.parseEther(amount),
+        // gasLimit: GAS_LIMIT,
+        value: parseEther(amount),
       },
     );
     const { transactionHash } = await receipt.wait();

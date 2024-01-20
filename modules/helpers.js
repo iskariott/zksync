@@ -1,7 +1,14 @@
 const { c, parseValue, findObjKeyByValue, logFile } = require('../utils/utils.js');
 const readline = require('readline');
 const { CHECK_GAS_DELAY, ALLOWED_GWEI, APPROVE_AMOUNT, GAS_LIMIT } = require('../config.js');
-const { MODULES, ETH_PROVIDER, USDC, ERC20_ABI, ZK_PROVIDER } = require('../utils/constants.js');
+const {
+  MODULES,
+  ETH_PROVIDER,
+  USDC,
+  ERC20_ABI,
+  ZK_PROVIDER,
+  ETH,
+} = require('../utils/constants.js');
 const { ethers } = require('ethers');
 
 async function getTokenBalance(signer, address) {
@@ -16,31 +23,30 @@ async function getTokenBalance(signer, address) {
 
 async function approveUSDC(signer, router, amount) {
   const routerName = findObjKeyByValue(MODULES, router);
+  const approveAmount = Math.random() * (APPROVE_AMOUNT[1] - APPROVE_AMOUNT[0]) + APPROVE_AMOUNT[0];
   try {
     const contract = new ethers.Contract(USDC, ERC20_ABI, signer);
     const allowanceData = await contract.allowance(signer.address, router);
     const allowance = parseValue(allowanceData, 6);
 
     if (amount > allowance) {
-      const approveAmount =
-        Math.floor(Math.random() * (APPROVE_AMOUNT[1] - APPROVE_AMOUNT[0] + 1)) + APPROVE_AMOUNT[0];
       const approve = await contract.approve(
         router,
-        ethers.utils.parseUnits(approveAmount.toString(), 6),
+        ethers.utils.parseUnits(approveAmount.toFixed(6), 6),
         {
           gasPrice: await ZK_PROVIDER.getGasPrice(),
           gasLimit: GAS_LIMIT,
         },
       );
       const { transactionHash } = await approve.wait();
-      const log = `Approved ${APPROVE_AMOUNT}USDC # Module: ${routerName} # Hash: ${transactionHash}`;
+      const log = `Approved ${approveAmount}USDC # Module: ${routerName} # Hash: ${transactionHash}`;
       console.log(log);
       logFile(log);
     }
   } catch (e) {
     const code = e.code ? ` : ${e.code}` : '';
-    console.log(c.red(`ERROR${code}! Approve: ${APPROVE_AMOUNT}USDC # Module: ${routerName}`));
-    logFile(`ERROR${code}! Approve: ${APPROVE_AMOUNT}USDC # Module: ${routerName}`);
+    console.log(c.red(`ERROR${code}! Approve: ${approveAmount}USDC # Module: ${routerName}`));
+    logFile(`ERROR${code}! Approve: ${approveAmount}USDC # Module: ${routerName}`);
     throw e;
   }
 }
@@ -67,8 +73,18 @@ async function waitForGas() {
   });
 }
 
+async function getMinAmount(contract, amount, path) {
+  const decimals = path[0] === ETH ? [18, 6] : [6, 18];
+  const bgAmount = ethers.utils.parseUnits(amount, decimals[0]);
+  const bgMinAmount = await contract.getAmountsOut(bgAmount, path);
+  const minAmount = ethers.utils.formatUnits(bgMinAmount[1], decimals[1]);
+  const minAmountSlip = minAmount - (minAmount / 100) * 0.5;
+  return ethers.utils.parseUnits(minAmountSlip.toFixed(6), decimals[1]);
+}
+
 module.exports = {
   waitForGas,
   getTokenBalance,
   approveUSDC,
+  getMinAmount,
 };
