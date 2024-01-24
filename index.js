@@ -20,7 +20,6 @@ async function process() {
       const signer = new ethers.Wallet(keys[accs[i]], ZK_PROVIDER);
       const eth_balance = parseValue(await signer.getBalance(), 18);
       const eth_amount = (eth_balance / (AMOUNT_OUT_PERCENT * 100)).toFixed(8);
-      console.log('eth_amount = ', eth_amount);
       if (!SWAP_TYPE) {
         const usdc_balance = parseValue(await getTokenBalance(signer, USDC), 6);
         if (usdc_balance) {

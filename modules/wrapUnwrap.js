@@ -7,7 +7,7 @@ async function wrapEth(signer, amount) {
   try {
     const contract = new ethers.Contract(ETH, WETH_ABI, signer);
     const receipt = await contract.deposit({
-      value: ethers.utils.parseEther(amount.toFixed(6)),
+      value: ethers.utils.parseEther(amount),
       gasPrice: await ZK_PROVIDER.getGasPrice(),
       nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
       gasLimit: GAS_LIMIT,
@@ -25,7 +25,7 @@ async function wrapEth(signer, amount) {
 async function unwrapEth(signer, amount) {
   try {
     const contract = new ethers.Contract(ETH, WETH_ABI, signer);
-    const receipt = await contract.withdraw(ethers.utils.parseEther(amount.toFixed(6)), {
+    const receipt = await contract.withdraw(ethers.utils.parseEther(amount), {
       gasPrice: await ZK_PROVIDER.getGasPrice(),
       nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
       gasLimit: GAS_LIMIT,
