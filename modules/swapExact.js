@@ -10,7 +10,7 @@ const {
 } = require('../utils/constants.js');
 const { c, findObjKeyByValue, logFile } = require('../utils/utils.js');
 const { approveUSDC, getMinAmount } = require('./helpers.js');
-const { parseUnits, formatUnits, parseEther, formatEther } = require('ethers/lib/utils.js');
+const { parseUnits, parseEther } = require('ethers/lib/utils.js');
 
 async function swapExactUSDC(signer, router, amount) {
   const routerName = findObjKeyByValue(MODULES, router);
@@ -27,7 +27,7 @@ async function swapExactUSDC(signer, router, amount) {
       {
         gasPrice: await ZK_PROVIDER.getGasPrice(),
         nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
-        // gasLimit: GAS_LIMIT,
+        gasLimit: GAS_LIMIT,
       },
     );
     const { transactionHash } = await receipt.wait();
@@ -55,7 +55,7 @@ async function swapExactETH(signer, router, amount) {
       {
         gasPrice: await ZK_PROVIDER.getGasPrice(),
         nonce: await ZK_PROVIDER.getTransactionCount(signer.address),
-        // gasLimit: GAS_LIMIT,
+        gasLimit: GAS_LIMIT,
         value: parseEther(amount),
       },
     );
